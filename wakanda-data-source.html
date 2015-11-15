@@ -78,7 +78,7 @@
         };
       },
 
-      setFilter2: function(dataClassName, selectedItem){
+      _setFilter2: function(dataClassName, selectedItem){
         var _this = this;
         this._updateCatalog(function(){
             var linkAttribute = _this.catalog.find(function(attr){
@@ -201,7 +201,7 @@
             var nestedDatasource = _this.$$('wakanda-data-source');
             if(nestedDatasource){
               var thisDataClass = _this.getAttribute('dataclass-name');
-              nestedDatasource.setFilter2(thisDataClass, _this.selectedItem);
+              nestedDatasource._setFilter2(thisDataClass, _this.selectedItem);
             }
 
             (_this.onchange || (function(){}))(data);
