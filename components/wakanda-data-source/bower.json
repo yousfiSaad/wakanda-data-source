@@ -1,0 +1,29 @@
+{
+  "name": "wakanda-data-source",
+  "version": "0.1.0",
+  "authors": [
+    "Saad YOUSFI <yousfi.saad@gmail.com>"
+  ],
+  "description": "Wakanda Data Source.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "wakanda"
+  ],
+  "main": "wakanda-data-source.html",
+  "license": "MIT",
+  "homepage": "https://github.com/yousfiSaad/wakanda-data-source/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}

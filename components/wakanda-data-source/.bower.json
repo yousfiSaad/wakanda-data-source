@@ -1,0 +1,38 @@
+{
+  "name": "wakanda-data-source",
+  "authors": [
+    "Saad YOUSFI <yousfi.saad@gmail.com>"
+  ],
+  "description": "Wakanda Data Source.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "wakanda"
+  ],
+  "main": "wakanda-data-source.html",
+  "license": "MIT",
+  "homepage": "https://github.com/yousfiSaad/wakanda-data-source/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  },
+  "_release": "ac3aaf88f8",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ac3aaf88f8802f835a1367b59b72840c2e6499e0"
+  },
+  "_source": "git://github.com/yousfiSaad/wakanda-data-source.git",
+  "_target": "master",
+  "_originalSource": "yousfiSaad/wakanda-data-source",
+  "_direct": true
+}

@@ -1,0 +1,228 @@
+
+<link rel="import" href="../polymer/polymer.html">
+
+
+<dom-module id="wakanda-data-source">
+  <script>
+    //will be replaced by dataprovider ...
+    var helpers  = {
+      getCatalog: function(args){
+        var dataclassName = args.dataclassName,
+            then = args.then,
+            restSrc = args.restSrc;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+            var responseAsJson = JSON.parse(xhttp.responseText);
+            var catalog = responseAsJson['dataClasses'][0]['attributes'];
+
+            then(catalog);
+          }
+        };
+        xhttp.open("GET", restSrc + "$catalog/"+ dataclassName, true);
+        xhttp.send();
+      },
+      getData: function(args){
+        var dataclassName = args.dataclassName,
+            itemsPerPage = args.itemsPerPage,
+            page = args.page,
+            restSrc = args.restSrc,
+            then = args.then,
+            filter = args.filter || null;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+            var responseAsJson = JSON.parse(xhttp.responseText);
+            var values = responseAsJson['__ENTITIES'];
+            then(values);
+          }
+        }
+        var top = itemsPerPage,
+          skip = (page - 1) * itemsPerPage;
+        // http://localhost:9090/rest/Simpledataclass?$top=2&$skip=2
+        var restReq = restSrc + dataclassName + ( filter || ( "?$top=" + top + "&$skip=" + skip ) );
+
+        // console.log(restReq);
+        xhttp.open("GET", restReq, true);
+        xhttp.send();
+      }
+    };
+
+    Polymer({
+
+      is: 'wakanda-data-source',
+
+      nextItem: function() {
+        console.log('not yet implemented');
+      },
+      previousItem: function() {
+        console.log('not yet implemented');
+      },
+      nextPage: function() {
+        var currentPage = parseInt(this.getAttribute('page'));
+        this.setAttribute('page', currentPage + 1);
+      },
+      previousPage: function() {
+        var currentPage = parseInt(this.getAttribute('page'));
+        this.setAttribute('page', currentPage - 1);
+      },
+
+      getValues: function(){
+        return {
+          catalog: this.catalog.filter(function(attr){
+            return attr.kind === 'storage';
+          }),
+          values: this.values
+        };
+      },
+
+      _setFilter2: function(dataClassName, selectedItem){
+        var _this = this;
+        this._updateCatalog(function(){
+            var linkAttribute = _this.catalog.find(function(attr){
+              return attr.type === dataClassName;
+            });
+
+            if(linkAttribute){
+              _this.setFilter( linkAttribute.name + '.ID=' + selectedItem.ID );
+            }
+        });
+      },
+
+      setFilter(filter){
+        this.filter = filter;
+        this.ready();
+      },
+
+      properties: {
+        'values': {
+          type: Array,
+          readOnly: false,
+          notify: false,
+          value: function(){return [];}
+        },
+        'catalog': {
+          type: Array,
+          readOnly: false,
+          notify: false,
+          value: function(){return [];}
+        },
+
+        'filter': {
+          type: Object,
+          readOnly: false,
+          notify: true,
+          value: ""
+        },
+        'selectedItem': {
+          type: Object,
+          readOnly: false,
+          notify: true,
+          value: function(){return {};}
+        },
+        'rest-src': {
+          reflectToAttribute: true,
+          type: String,
+          readOnly: false,
+          notify: true,
+          value: 'http://127.0.0.1:8081/rest/'
+        },
+        'dataclass-name': {
+          type: String,
+          readOnly: false,
+          notify: true
+        },
+        'page': {
+          reflectToAttribute: true,
+          type: Number,
+          readOnly: false,
+          notify: true,
+          value: 1
+        },
+        'items-per-page': {
+          reflectToAttribute: true,
+          type: Number,
+          readOnly: false,
+          notify: true,
+          value: 10
+        }
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+        if (this.getAttribute('dataclass-name')) {
+          var _this = this;
+          this._updateCatalog(function(){
+            _this._updateData();
+          });
+        }
+        console.log(this.localName + '#' + this.id + ' is ready ');
+      },
+
+      _updateCatalog: function(callBack){
+        var dataclassName = this.getAttribute('dataclass-name'),
+            restSrc = this.getAttribute('rest-src');
+
+        var _this = this;
+
+        helpers.getCatalog({
+          dataclassName: dataclassName,
+          restSrc: restSrc,
+          // TODO: es6 for better use of promises ..
+          then : function(catalog){
+            _this.catalog = catalog;
+            callBack();
+          }
+        });
+      },
+      _updateData: function(){
+        var dataclassName = this.getAttribute('dataclass-name'),
+            itemsPerPage = this.getAttribute('items-per-page'),
+            page = this.getAttribute('page'),
+            restSrc = this.getAttribute('rest-src'),
+            filter = this.filter;
+
+        var _this = this;
+
+        helpers.getData({
+          dataclassName: dataclassName,
+          itemsPerPage: itemsPerPage,
+          page: page,
+          restSrc: restSrc,
+          filter: filter?'?$filter="'+filter+'"':'',
+          then: function (data){
+            _this.values = data;
+            _this.selectedItem = _this.values[0] || null;
+
+
+            var nestedDatasource = _this.$$('wakanda-data-source');
+            if(nestedDatasource){
+              var thisDataClass = _this.getAttribute('dataclass-name');
+              nestedDatasource._setFilter2(thisDataClass, _this.selectedItem);
+            }
+
+            (_this.onchange || (function(){}))(data);
+          }
+        });
+      },
+      attributeChanged: function(name, type) {
+        var _this = this;
+        switch (name) {
+          case "dataclass-name":
+            this._updateCatalog(function(){
+              _this._updateData();
+            });
+            break;
+          case "page":
+          case "items-per-page":
+            this._updateData();
+            break;
+        }
+      }
+    });
+
+  </script>
+</dom-module>
