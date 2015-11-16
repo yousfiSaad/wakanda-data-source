@@ -217,7 +217,7 @@
         var nestedDatasource = this.$$('wakanda-data-source');
         if(nestedDatasource){
           var thisDataClass = this.getAttribute('dataclass-name');
-          nestedDatasource.setFilter2(thisDataClass, this.selectedItem);
+          nestedDatasource._setFilter2(thisDataClass, this.selectedItem);
         }
       },
       selectItem: function(idx){
