@@ -1,5 +1,5 @@
 
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
 
 
 <dom-module id="wakanda-data-source">
@@ -70,11 +70,21 @@
       },
 
       getValues: function(){
+        var _this = this;
         return {
           catalog: this.catalog.filter(function(attr){
             return attr.kind === 'storage';
           }),
-          values: this.values
+          values: this.values,
+          select: function(idx){
+            _this.selectItem(idx);
+          },
+          nextPage: function(){
+            _this.nextPage();
+          },
+          previousPage: function(){
+            _this.previousPage();
+          }
         };
       },
 
@@ -195,18 +205,26 @@
           filter: filter?'?$filter="'+filter+'"':'',
           then: function (data){
             _this.values = data;
-            _this.selectedItem = _this.values[0] || null;
+            _this.selectedItem = {};
 
-
-            var nestedDatasource = _this.$$('wakanda-data-source');
-            if(nestedDatasource){
-              var thisDataClass = _this.getAttribute('dataclass-name');
-              nestedDatasource._setFilter2(thisDataClass, _this.selectedItem);
-            }
+            _this._updateSubElement();
 
             (_this.onchange || (function(){}))(data);
           }
         });
+      },
+      _updateSubElement: function(){
+        var nestedDatasource = this.$$('wakanda-data-source');
+        if(nestedDatasource){
+          var thisDataClass = this.getAttribute('dataclass-name');
+          nestedDatasource.setFilter2(thisDataClass, this.selectedItem);
+        }
+      },
+      selectItem: function(idx){
+        if(this.values[idx]){
+          this.selectedItem = this.values[idx];
+          this._updateSubElement();
+        }
       },
       attributeChanged: function(name, type) {
         var _this = this;
