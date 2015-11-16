@@ -1,0 +1,25 @@
+{
+  "name": "demo with angular and bootstrap",
+  "version": "0.0.5-alpha",
+  "homepage": "https://github.com/yousfiSaad/wakanda-data-source",
+  "authors": [
+    "yousfiSaad <yousfi.saad@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "wakanda-data-source": "~0.0.5-alpha",
+    "binding-directive": "~0.0.0-Alpha",
+    "vaadin-grid": "0.9.0-beta4"
+  },
+  "resolutions": {
+    "vaadin-grid": "0.9.0-beta4"
+  }
+}

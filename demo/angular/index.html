@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+
+    <!-- Bootstrap core CSS -->
+  <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap theme -->
+  <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="bower_components/wakanda-data-source/wakanda-data-source.html">
+  <link href="bower_components/vaadin-grid/vaadin-grid.html" rel="import">
+
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/binding-directive/binding-directive.js" charset="utf-8"></script>
+
+  <style media="screen">
+    .Companies > span {
+      border-bottom: 1px solid black;
+      cursor: pointer;
+    }
+  </style>
+
+
+  <script type="text/javascript">
+    angular.module('app', ['wakanda-binding'])
+      .controller('ctrl', ['$scope', '$element', function($scope, $element) {
+        $scope.companiesPerPage = 3;
+
+        var grid = $element[0].querySelector('.Companies > vaadin-grid');
+        grid.onselect = function() {
+          var selectedIndexs = grid.selection.selected();
+          if (selectedIndexs[0] !== undefined) {
+            $scope.companySource.select(selectedIndexs[0]);
+          }
+        };
+
+        console.log($element);
+      }]);
+  </script>
+</head>
+
+<body>
+  <div id="applicationcontainer" ng-app="app">
+    <div id="controllercontainer" ng-controller="ctrl">
+
+      <wakanda-data-source items-per-page='{{companiesPerPage}}' dataclass-name='Company' bind-to="companySource">
+        <wakanda-data-source dataclass-name='Emp' bind-to="empSource">
+        </wakanda-data-source>
+      </wakanda-data-source>
+      <div class="Companies">
+        <h2>Companies</h2>
+
+        Companies per page :
+        <input type="Number" ng-model="companiesPerPage" name="name">
+        <span ng-click="companySource.previousPage()">Previous Page</span>
+        |
+        <span ng-click="companySource.nextPage()">Next Page</span>
+
+        <vaadin-grid selection-mode="Single">
+          <table>
+            <colgroup>
+              <col ng-repeat="attr in companySource.catalog" header-text="{{attr.name}}">
+            </colgroup>
+            <tbody>
+              <tr ng-repeat="company in companySource.values">
+                <td ng-repeat="attr in companySource.catalog">{{company[attr.name]}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </vaadin-grid>
+
+      </div>
+      <div class="Employees" ng-show="!!empSource.values.length">
+        <h2>Employees</h2>
+
+        <div class="col-md-6">
+                 <table class="table table-striped">
+                   <thead>
+                     <tr>
+                       <th ng-repeat="attr in empSource.catalog" >{{attr.name}}</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr ng-repeat="person in empSource.values">
+                       <td ng-repeat="attr in empSource.catalog">{{person[attr.name]}}</td>
+                     </tr>
+                   </tbody>
+                 </table>
+               </div>
+
+        <vaadin-grid>
+          <table>
+            <colgroup>
+              <col ng-repeat="attr in empSource.catalog" header-text="{{attr.name}}">
+            </colgroup>
+            <tbody>
+              <tr ng-repeat="person in empSource.values">
+                <td ng-repeat="attr in empSource.catalog">{{person[attr.name]}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </vaadin-grid>
+
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+</html>
